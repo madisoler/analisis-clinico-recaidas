@@ -1,0 +1,87 @@
+Predicción de Recaída en Cáncer de Tiroides
+
+Este repositorio contiene el código fuente utilizado para construir modelos de clasificación binaria aplicados a datos clínicos de pacientes con carcinoma diferenciado de tiroides. El objetivo principal es predecir la probabilidad de recaída, utilizando modelos de machine learning sobre variables clínicamente relevantes.
+
+## Dataset
+
+- Fuente: archivo `Thyroid_Diff.csv` (datos anonimizados)
+- Total de registros: 383
+- Variables disponibles:
+  - Edad
+  - Estadificación TNM: T, N, M
+  - Risk: riesgo clínico categorizado
+  - Response: respuesta al tratamiento
+  - Gender: género
+  - Recurred: variable binaria objetivo
+
+## Definición de Grupos
+
+Se construyeron dos subconjuntos clínicamente definidos:
+
+- **Alta probabilidad de recaída**:
+  - M = M1
+  - Response = Structural Incomplete
+  - Risk = High
+  - Risk = Intermediate y Response = Biochemical Incomplete
+
+- **Baja probabilidad de recaída**:
+  - Response = Excellent
+  - Risk = Low y Response en {Indeterminate, Biochemical Incomplete}
+  - Risk = Intermediate y Response = Indeterminate
+
+Ambos subconjuntos se combinan posteriormente en un único DataFrame (`recaidas_unidas_df`) para análisis.
+
+## Preprocesamiento
+
+- Codificación binaria de la variable `Recurred` (Yes = 1, No = 0)
+- Codificación LabelEncoder para variables categóricas: T, N, M, Risk, Response, Gender
+- Separación en variables predictoras `X` y variable objetivo `y`
+
+## Modelado
+
+### Random Forest
+- `RandomForestClassifier` de scikit-learn
+- 100 árboles, sin límite de profundidad
+- Evaluación: accuracy, matriz de confusión, curva ROC, AUC
+- Análisis de importancia de variables
+
+### Árbol de Decisión
+- `DecisionTreeClassifier` de scikit-learn
+- Curva ROC y AUC
+- Visualización del árbol (primeros 5 niveles)
+- Gráfico de importancia de variables
+
+### XGBoost
+- `XGBClassifier` con `use_label_encoder=False`
+- Evaluación: matriz de confusión, curva ROC, AUC
+- Gráfico de importancia de variables
+
+### Regresión Logística
+- `MNLogit` de statsmodels
+- Fórmula: `Recurred ~ Age + Risk + Response + T + N + M`
+- Análisis de multicolinealidad (matriz de correlación)
+- Visualización de coeficientes y significancia estadística
+
+## Evaluación
+
+Las métricas de desempeño incluyen:
+- Accuracy
+- Matriz de confusión
+- Curva ROC y AUC
+- Importancia de variables
+
+Los modelos Random Forest y XGBoost alcanzaron un AUC de 0.99. La variable más predictiva fue consistentemente `Response`.
+
+## Requisitos
+
+- Python 3.8+
+- pandas
+- seaborn
+- matplotlib
+- scikit-learn
+- xgboost
+- statsmodels
+- patsy
+
+## Estructura del repositorio
+
